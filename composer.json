@@ -5,7 +5,8 @@
         "google/apiclient": "^2.0",
         "guzzlehttp/guzzle": "^6.2",
         "symfony/dom-crawler": "^3.2",
-        "myclabs/php-enum": "^1.5"
+        "myclabs/php-enum": "^1.5",
+        "symfony/css-selector": "^3.2"
     },
     "autoload": {
         "psr-4": {
