@@ -2,7 +2,8 @@
     "name": "tuki0918/scraper-pso2-event-calendar",
     "license": "MIT",
     "require": {
-        "google/apiclient": "^2.0"
+        "google/apiclient": "^2.0",
+        "guzzlehttp/guzzle": "^6.2"
     },
     "autoload": {
         "psr-4": {
