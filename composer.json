@@ -10,7 +10,7 @@
     },
     "autoload": {
         "psr-4": {
-            "Tuki0918\\App\\": "src/"
+            "App\\": "src/"
         }
     }
 }
