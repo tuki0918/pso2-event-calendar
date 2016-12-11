@@ -8,6 +8,7 @@ use App\Entity\ValueObject\CampaignId;
 use App\Entity\ValueObject\CampaignPeriod;
 use App\Parser\Core\ParseEngine;
 use App\Parser\Response\CampaignResponse;
+use DateInterval;
 use DateTimeImmutable;
 use Exception;
 use Symfony\Component\DomCrawler\Crawler;
@@ -146,6 +147,8 @@ class CampaignParseEngine extends ParseEngine
         $regex2 = '`^(?<shour>\d+):(?<sminute>\d+) ～ (?<ehour>\d+):(?<eminute>\d+)$`';
         if (preg_match($regex1, $time, $m)) {
             $startAt = $day->setTime($m['shour'], $m['sminute']);
+            // 終了時間が指定されていない場合は開始時間の30分後に設定する
+            $endAt = $startAt->add(new DateInterval('PT30M'));
         } elseif (preg_match($regex2, $time, $m)) {
             $startAt = $day->setTime($m['shour'], $m['sminute']);
             $endAt = $day->setTime($m['ehour'], $m['eminute']);

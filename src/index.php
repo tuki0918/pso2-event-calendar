@@ -29,24 +29,15 @@ try {
 
     /** @var Campaign $campaign */
     foreach ($campaigns as $campaign) {
-        $summary = $campaign->description();
+        $summary = "【{$campaign->type()->getValue()}】{$campaign->description()}";
         $start = [
             'dateTime' => $campaign->period()->start()->format(DateTime::ISO8601),
             'timeZone' => $campaign->period()->start()->getTimezone(),
         ];
-
-        // 終了時間が指定されていない場合は30分に指定する
-        if (is_null($campaign->period()->end())) {
-            $end = [
-                'dateTime' => $campaign->period()->start()->add(new DateInterval('PT30M'))->format(DateTime::ISO8601),
-                'timeZone' => $campaign->period()->start()->getTimezone(),
-            ];
-        } else {
-            $end = [
-                'dateTime' => $campaign->period()->end()->format(DateTime::ISO8601),
-                'timeZone' => $campaign->period()->end()->getTimezone(),
-            ];
-        }
+        $end = [
+            'dateTime' => $campaign->period()->end()->format(DateTime::ISO8601),
+            'timeZone' => $campaign->period()->end()->getTimezone(),
+        ];
 
         // カレンダーイベントを作成する
         $event = new Google_Service_Calendar_Event([
