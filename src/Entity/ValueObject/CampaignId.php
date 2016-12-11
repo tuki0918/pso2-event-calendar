@@ -17,6 +17,14 @@ class CampaignId
     }
 
     /**
+     * @return string
+     */
+    public function __toString(): string
+    {
+        return (string)$this->value();
+    }
+
+    /**
      * @param null|string $id
      * @return CampaignId
      */
@@ -31,13 +39,5 @@ class CampaignId
     public function value(): ?string
     {
         return $this->value;
-    }
-
-    /**
-     * @return string
-     */
-    public function __toString(): string
-    {
-        return (string)$this->value();
     }
 }

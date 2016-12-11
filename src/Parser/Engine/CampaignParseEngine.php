@@ -2,11 +2,11 @@
 
 namespace App\Parser\Engine;
 
-use App\Parser\Core\ParseEngine;
 use App\Entity\Campaign;
 use App\Entity\Enum\CampaignType;
 use App\Entity\ValueObject\CampaignId;
 use App\Entity\ValueObject\CampaignPeriod;
+use App\Parser\Core\ParseEngine;
 use App\Parser\Response\CampaignResponse;
 use DateTimeImmutable;
 use Exception;
