@@ -1,4 +1,4 @@
 vendor
 composer.lock
-client_secret.json
 .php_cs.cache
+service-account.json
