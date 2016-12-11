@@ -1,6 +1,6 @@
 # scraper-pso2-event-calendar
 
-[Google Calendar](https://calendar.google.com/calendar/embed?src=am384g4913d514u6lgdmcv8ces%40group.calendar.google.com&ctz=Asia/Tokyo)
+[Google Calendar](https://goo.gl/JWExl7)
 
 ### Requires
 
