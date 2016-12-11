@@ -87,7 +87,7 @@ class CampaignParseEngine extends ParseEngine
                 // キャンペーンテーブルの行
                 $this->cssSelector->toXPath('table tr')
             )->each(function (Crawler $n, $i) use ($day) {
-                // 見出しをスキップする
+                // 見出し行をスキップする
                 if ($i <= 0) {
                     return null;
                 }
@@ -171,6 +171,8 @@ class CampaignParseEngine extends ParseEngine
                 return CampaignType::Boost();
             case '緊急':
                 return CampaignType::Emergency();
+            case 'アークスリーグ':
+                return CampaignType::ArksLeague();
             case 'ネットカフェ':
                 return CampaignType::NetCafe();
             case 'カジノ':

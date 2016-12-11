@@ -6,11 +6,12 @@ use App\Entity\Core\Enum;
 
 class CampaignType extends Enum
 {
-    const BOOST = 'boost';
-    const EMERGENCY = 'emergency';
-    const NETCAFE = 'netcafe';
-    const CASINO = 'casino';
-    const CHALLENGE = 'challenge';
+    const BOOST = 'ブースト';
+    const EMERGENCY = '緊急';
+    const ARKSLEAGUE = 'アークスリーグ';
+    const NETCAFE = 'ネットカフェ';
+    const CASINO = 'カジノ';
+    const CHALLENGE = 'チェレンジ';
     const UNKNOWN = 'unknown';
 
     /**
@@ -29,6 +30,15 @@ class CampaignType extends Enum
     public static function Emergency(): self
     {
         return new self(self::EMERGENCY);
+    }
+
+    /**
+     * アークスリーグ
+     * @return CampaignType
+     */
+    public static function ArksLeague(): self
+    {
+        return new self(self::ARKSLEAGUE);
     }
 
     /**
