@@ -27,9 +27,18 @@ try {
     // カレンダーを初期化
     $calendar->clear(GOOGLE_CALENDAR_ID);
 
+    // イベント変数
+    $targetUrl = TARGET_URL;
+    $now = new DateTimeImmutable();
+
     /** @var Campaign $campaign */
     foreach ($campaigns as $campaign) {
-        $summary = "【{$campaign->type()->getValue()}】{$campaign->description()}";
+        $summary = $campaign->description();
+        $description = <<< EOT
+{$targetUrl}
+Last-Modified: {$now->format('Y-m-d H:i:s')}
+EOT;
+
         $start = [
             'dateTime' => $campaign->period()->start()->format(DateTime::ISO8601),
             'timeZone' => $campaign->period()->start()->getTimezone(),
@@ -42,7 +51,7 @@ try {
         // カレンダーイベントを作成する
         $event = new Google_Service_Calendar_Event([
             'summary' => $summary,
-            'description' => TARGET_URL,
+            'description' => $description,
             'start' => $start,
             'end' => $end,
         ]);
