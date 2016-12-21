@@ -194,6 +194,9 @@ class CampaignParseEngine extends ParseEngine
             case 'チャレンジ':
                 return CampaignType::Challenge();
             default:
+                $this->log->warning('not found type.', [
+                    'content' => $content,
+                ]);
                 return CampaignType::Unknown();
         }
     }
