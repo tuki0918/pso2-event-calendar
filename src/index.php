@@ -1,33 +1,39 @@
 <?php
 
-require_once __DIR__.'/../vendor/autoload.php';
+require_once __DIR__ . '/../vendor/autoload.php';
 
 use App\Entity\Campaign;
 use App\GoogleApi\GoogleCalendarApi;
 use App\Parser\Engine\CampaignParseEngine;
 use App\Parser\Parser;
+use Dotenv\Dotenv;
 use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\RavenHandler;
 use Monolog\Logger;
 
 date_default_timezone_set('Asia/Tokyo');
 
-define('SENTRY_IO_API', 'https://4afb11d50e0c48cba1240e1d64fdafb1:4d57c7290ec94e61bc41e2509e042399@sentry.io/119834');
+// Environment Load
+(new Dotenv(__DIR__))->load();
 
-define('GOOGLE_CALENDAR_ID', 'am384g4913d514u6lgdmcv8ces@group.calendar.google.com');
-define('GOOGLE_API_SERVICE_ACCOUNT_PATH', __DIR__.'/../service-account.json');
+define('ROOT_DIR', __DIR__);
+define('DEBUG_MODE', getenv('DEBUG_MODE'));
+
+define('TARGET_URL', DEBUG_MODE ? getenv('TARGET_URL_DEBUG') : getenv('TARGET_URL'));
+
+define('SENTRY_IO_API', getenv('SENTRY_IO_API'));
+
+define('GOOGLE_CALENDAR_ID', getenv('GOOGLE_CALENDAR_ID'));
+define('GOOGLE_API_SERVICE_ACCOUNT_PATH', ROOT_DIR . '/service-account.json');
 define('GOOGLE_API_SCOPES', [
     Google_Service_Calendar::CALENDAR,
 ]);
-
-define('TARGET_URL', 'http://pso2.jp/players/news/?charid=i_boostevent');
-//define('TARGET_URL', 'http://localhost/tests/resources/pso2.html');
 
 $client = new Raven_Client(SENTRY_IO_API);
 $handler = new RavenHandler($client);
 $handler->setFormatter(new LineFormatter("%message% %context% %extra%\n"));
 
-$log = new Logger('name');
+$log = new Logger(DEBUG_MODE ? 'debug' : 'production');
 $log->pushHandler($handler);
 
 try {
