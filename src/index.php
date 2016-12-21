@@ -32,7 +32,7 @@ $log->pushHandler($handler);
 
 try {
     $calendar = new GoogleCalendarApi(GOOGLE_API_SERVICE_ACCOUNT_PATH, GOOGLE_API_SCOPES);
-    $parser = new Parser(new CampaignParseEngine());
+    $parser = new Parser(new CampaignParseEngine($log));
 
     // キャンペーンを取得
     $campaigns = $parser->scrape(TARGET_URL)->data();
