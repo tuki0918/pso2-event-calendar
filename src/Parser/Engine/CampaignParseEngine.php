@@ -145,6 +145,7 @@ class CampaignParseEngine extends ParseEngine
 
         $regex1 = '`^(?<shour>\d+):(?<sminute>\d+)$`';
         $regex2 = '`^(?<shour>\d+):(?<sminute>\d+) ～ (?<ehour>\d+):(?<eminute>\d+)$`';
+        $regex3 = '`^終日$`';
         if (preg_match($regex1, $time, $m)) {
             $startAt = $day->setTime($m['shour'], $m['sminute']);
             // 終了時間が指定されていない場合は開始時間の30分後に設定する
@@ -152,7 +153,17 @@ class CampaignParseEngine extends ParseEngine
         } elseif (preg_match($regex2, $time, $m)) {
             $startAt = $day->setTime($m['shour'], $m['sminute']);
             $endAt = $day->setTime($m['ehour'], $m['eminute']);
+        } elseif (preg_match($regex3, $time, $m)) {
+            $startAt = $day->setTime(0, 0);
+            $endAt = $day->setTime(23, 59, 59);
         }
+
+        if (is_null($startAt)) {
+            $this->log->warning('period parse error.', [
+                'content' => $time,
+            ]);
+        }
+
         return CampaignPeriod::create($startAt, $endAt);
     }
 
