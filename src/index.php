@@ -24,6 +24,7 @@ define('TARGET_URL', DEBUG_MODE ? getenv('TARGET_URL_DEBUG') : getenv('TARGET_UR
 define('SENTRY_IO_API', getenv('SENTRY_IO_API'));
 
 define('GOOGLE_CALENDAR_ID', getenv('GOOGLE_CALENDAR_ID'));
+define('GOOGLE_CALENDAR_CREATOR', getenv('GOOGLE_CALENDAR_CREATOR'));
 define('GOOGLE_API_SERVICE_ACCOUNT_PATH', ROOT_DIR.'/service-account.json');
 define('GOOGLE_API_SCOPES', [
     Google_Service_Calendar::CALENDAR,
@@ -43,6 +44,8 @@ class Task
     private $url;
     /** @var string */
     private $calendarId;
+    /** @var string */
+    private $calendarCreator;
 
     /**
      * Task constructor.
@@ -56,6 +59,7 @@ class Task
         $this->now = new DateTimeImmutable();
         $this->url = TARGET_URL;
         $this->calendarId = GOOGLE_CALENDAR_ID;
+        $this->calendarCreator = GOOGLE_CALENDAR_CREATOR;
     }
 
     /**
@@ -66,7 +70,7 @@ class Task
         // キャンペーンを取得
         $campaigns = $this->parser->scrape($this->url)->data();
         // カレンダーを初期化
-        $this->calendar->clear($this->calendarId);
+        $this->calendar->clear($this->calendarId, $this->calendarCreator);
 
         /** @var Campaign $campaign */
         foreach ($campaigns as $campaign) {

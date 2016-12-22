@@ -24,13 +24,18 @@ class GoogleCalendarApi extends GoogleApi
     /**
      * 指定したカレンダーに登録されている予定を削除する
      * @param string $calendarId
+     * @param string $calendarCreator
      */
-    public function clear(string $calendarId)
+    public function clear(string $calendarId, string $calendarCreator)
     {
         $events = $this->service->events->listEvents($calendarId);
         while (true) {
+            /** @var Google_Service_Calendar_Event $event */
             foreach ($events->getItems() as $event) {
-                $this->service->events->delete($calendarId, $event->id);
+                // イベント作成者が指定した者と等しい場合のみ削除する
+                if ($event->getCreator()->email === $calendarCreator) {
+                    $this->service->events->delete($calendarId, $event->id);
+                }
             }
 
             $pageToken = $events->getNextPageToken();
