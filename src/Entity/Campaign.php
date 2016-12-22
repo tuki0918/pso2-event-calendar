@@ -55,6 +55,15 @@ class Campaign extends Entity
     }
 
     /**
+     * 識別子
+     * @return CampaignId
+     */
+    public function id(): CampaignId
+    {
+        return $this->id;
+    }
+
+    /**
      * イベント期間
      * @return DateTimeImmutable
      */
