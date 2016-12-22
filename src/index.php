@@ -17,7 +17,7 @@ date_default_timezone_set('Asia/Tokyo');
 (new Dotenv(__DIR__))->load();
 
 define('ROOT_DIR', __DIR__);
-define('DEBUG_MODE', getenv('DEBUG_MODE'));
+define('DEBUG_MODE', (bool)getenv('DEBUG_MODE'));
 
 define('TARGET_URL', DEBUG_MODE ? getenv('TARGET_URL_DEBUG') : getenv('TARGET_URL'));
 
