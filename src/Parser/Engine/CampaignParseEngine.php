@@ -193,6 +193,8 @@ class CampaignParseEngine extends ParseEngine
                 return CampaignType::Casino();
             case 'チャレンジ':
                 return CampaignType::Challenge();
+            case 'ライブ':
+                return CampaignType::Live();
             default:
                 $this->log->warning('not found type.', [
                     'content' => $content,

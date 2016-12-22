@@ -12,6 +12,7 @@ class CampaignType extends Enum
     const NETCAFE = 'ネットカフェ';
     const CASINO = 'カジノ';
     const CHALLENGE = 'チェレンジ';
+    const LIVE = 'ライブ';
     const UNKNOWN = 'unknown';
 
     /**
@@ -66,6 +67,15 @@ class CampaignType extends Enum
     public static function Challenge(): self
     {
         return new self(self::CHALLENGE);
+    }
+
+    /**
+     * ライブイベント
+     * @return CampaignType
+     */
+    public static function Live(): self
+    {
+        return new self(self::LIVE);
     }
 
     /**
