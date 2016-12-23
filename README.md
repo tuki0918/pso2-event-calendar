@@ -5,7 +5,8 @@
 ### Requires
 
 + php: >= 7.1
-+ service-account.json
++ src/.env
++ src/service-account.json
 
 ### Usage
 
