@@ -7,8 +7,9 @@ install:
   - curl -s http://getcomposer.org/installer | php
   - php composer.phar install --dev --no-interaction
 script:
+  - php vendor/bin/php-cs-fixer fix -v --dry-run
   - mkdir -p build/logs
-  - php vendor/bin/phpunit
+  - php vendor/bin/phpunit --coverage-clover build/logs/clover.xml
 
 after_success:
   - travis_retry php vendor/bin/coveralls -v
