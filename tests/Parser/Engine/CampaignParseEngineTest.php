@@ -26,7 +26,7 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
      */
     public function コンテンツをロードしパースする(CampaignParseEngine $engine)
     {
-        $content = file_get_contents(__DIR__.'/../../resources/pso2.html');
+        $content = file_get_contents(__DIR__.'/../../resources/campaign-20161207.html');
         $response = $engine->setContent($content)->parse();
         $this->assertInstanceOf(CampaignResponse::class, $response);
         return $response;
