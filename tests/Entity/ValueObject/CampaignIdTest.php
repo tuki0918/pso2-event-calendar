@@ -14,6 +14,7 @@ class CampaignIdTest extends \PHPUnit_Framework_TestCase
         $obj = CampaignId::create($id = 999);
         $this->assertInstanceOf(CampaignId::class, $obj);
         $this->assertEquals($obj->value(), $id);
+        $this->assertEquals((string)$obj, $id);
     }
 
     /**
