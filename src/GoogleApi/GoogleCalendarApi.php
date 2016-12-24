@@ -2,6 +2,7 @@
 
 namespace App\GoogleApi;
 
+use Google_Client;
 use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 
@@ -12,12 +13,11 @@ class GoogleCalendarApi extends GoogleApi
 
     /**
      * GoogleCalendarApi constructor.
-     * @param string $credential
-     * @param array $scopes
+     * @param Google_Client $client
      */
-    public function __construct(string $credential, array $scopes)
+    public function __construct(Google_Client $client)
     {
-        parent::__construct($credential, $scopes);
+        parent::__construct($client);
         $this->service = new Google_Service_Calendar($this->client());
     }
 

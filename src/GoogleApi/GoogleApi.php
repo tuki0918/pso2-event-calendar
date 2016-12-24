@@ -11,15 +11,10 @@ class GoogleApi
 
     /**
      * GoogleApi constructor.
-     * @param string $credential
-     * @param array $scopes
+     * @param Google_Client $client
      */
-    public function __construct(string $credential, array $scopes)
+    public function __construct(Google_Client $client)
     {
-        $client = new Google_Client();
-        $client->setAuthConfig($credential);
-        $client->setScopes($scopes);
-
         $this->client = $client;
     }
 

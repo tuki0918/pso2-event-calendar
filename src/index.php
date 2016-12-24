@@ -111,8 +111,13 @@ $handler->setFormatter(new LineFormatter("%message% %context% %extra%\n"));
 $log = new Logger(DEBUG_MODE ? 'debug' : 'production');
 $log->pushHandler($handler);
 
+// Google Clientの設定
+$client = new Google_Client();
+$client->setAuthConfig(GOOGLE_API_SERVICE_ACCOUNT_PATH);
+$client->setScopes(GOOGLE_API_SCOPES);
+
 // 依存クラスの設定
-$calendar = new GoogleCalendarApi(GOOGLE_API_SERVICE_ACCOUNT_PATH, GOOGLE_API_SCOPES);
+$calendar = new GoogleCalendarApi($client);
 $parser = new Parser(new CampaignParseEngine($log));
 
 // タスクの呼び出し
