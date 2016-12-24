@@ -15,7 +15,7 @@ class CampaignResponse extends ParseResponse
     public static function create(
         string $title,
         Campaign ...$campaigns
-    ) {
+    ): CampaignResponse {
         return new self($title, $campaigns);
     }
 }

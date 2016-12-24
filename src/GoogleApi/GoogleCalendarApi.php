@@ -26,7 +26,7 @@ class GoogleCalendarApi extends GoogleApi
      * @param string $calendarId
      * @param string $calendarCreator
      */
-    public function clear(string $calendarId, string $calendarCreator)
+    public function clear(string $calendarId, string $calendarCreator): void
     {
         $events = $this->service->events->listEvents($calendarId);
         while (true) {

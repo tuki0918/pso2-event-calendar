@@ -10,7 +10,7 @@ use App\Parser\Core\ParseEngine;
 use App\Parser\Response\CampaignResponse;
 use DateInterval;
 use DateTimeImmutable;
-use Exception;
+use RuntimeException;
 use Symfony\Component\DomCrawler\Crawler;
 
 class CampaignParseEngine extends ParseEngine
@@ -33,7 +33,7 @@ class CampaignParseEngine extends ParseEngine
     /**
      * 初期化
      */
-    private function clear()
+    private function clear(): void
     {
         $this->data = [];
     }
@@ -109,9 +109,9 @@ class CampaignParseEngine extends ParseEngine
      * キャンペーン開始日
      * @param string $day
      * @return DateTimeImmutable|null
-     * @throws Exception
+     * @throws RuntimeException
      */
-    private function day(string $day)
+    private function day(string $day): ?DateTimeImmutable
     {
         if ($day === '期間ブースト') {
             return null;
@@ -122,7 +122,7 @@ class CampaignParseEngine extends ParseEngine
             $time = date('Y-m-d 00:00:00', mktime(0, 0, 0, $m['mounth'], $m['day']));
             return new DateTimeImmutable($time);
         } else {
-            throw new Exception('日付パースエラー');
+            throw new RuntimeException('日付パースエラー');
         }
     }
 
