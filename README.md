@@ -16,38 +16,25 @@
 + Calendar Update
 
 ```
-docker run --rm -it \
-  -v $(pwd):/var/www/html \
-  php:7.1-apache \
-  php src/index.php
+make update
 ```
 
 + Fix Coding Style
 
 ```
-docker run --rm -it \
-  -v $(pwd):/var/www/html \
-  php:7.1-apache \
-  vendor/bin/php-cs-fixer fix -v
+make styling
 ```
 
 + Unit Test
 
 ```
-docker run --rm -it \
-  -v $(pwd):/var/www/html \
-  php:7.1-apache \
-  vendor/bin/phpunit
+make test
 ```
 
 ### Composer
 
-+ Packages Install
-
-:mag: PHP Version in Image.
++ Packages Install (PHP v7.0)
 
 ```
-docker run --rm \
-  -v $(pwd):/app \
-  composer/composer:1.1-alpine install
+make setup
 ```
