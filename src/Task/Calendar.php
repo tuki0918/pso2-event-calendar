@@ -18,10 +18,6 @@ class Calendar
     private $calendar;
     /** @var DateTimeImmutable */
     private $now;
-    /** @var string */
-    private $calendarId;
-    /** @var string */
-    private $calendarCreator;
 
     /**
      * Calendar constructor.
@@ -35,20 +31,23 @@ class Calendar
         $this->engine = $engine;
         $this->calendar = $calendar;
         $this->now = new DateTimeImmutable();
-        $this->calendarCreator = GOOGLE_CALENDAR_CREATOR;
     }
 
     /**
      * キャンペーン情報を取得し、カレンダーに登録する
      * @param string $url
      * @param string $calendarId
+     * @param string $calendarCreator
      */
-    public function run(string $url, string $calendarId)
-    {
+    public function run(
+        string $url,
+        string $calendarId,
+        string $calendarCreator
+    ) {
         // キャンペーンを取得
         $campaigns = $this->engine->scrape($url)->data();
         // カレンダーを初期化
-        $this->calendar->clear($calendarId, $this->calendarCreator);
+        $this->calendar->clear($calendarId, $calendarCreator);
 
         /** @var Campaign $campaign */
         foreach ($campaigns as $campaign) {
