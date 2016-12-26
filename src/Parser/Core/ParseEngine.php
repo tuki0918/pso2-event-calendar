@@ -2,6 +2,7 @@
 
 namespace App\Parser\Core;
 
+use GuzzleHttp\Client;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\CssSelector\CssSelectorConverter;
 use Symfony\Component\DomCrawler\Crawler;
@@ -14,12 +15,15 @@ abstract class ParseEngine implements ParseEngineInterface
     protected $cssSelector;
     /** @var LoggerInterface */
     protected $log;
+    /** @var Client */
+    private $client;
 
     /**
      * ParseEngine constructor.
      */
     public function __construct(LoggerInterface $log)
     {
+        $this->client = new Client();
         $this->crawler = new Crawler();
         $this->cssSelector = new CssSelectorConverter();
         $this->log = $log;
@@ -34,5 +38,17 @@ abstract class ParseEngine implements ParseEngineInterface
         $this->crawler->clear();
         $this->crawler->addContent($content);
         return $this;
+    }
+
+    /**
+     * @param string $url
+     * @return ParseResponse
+     */
+    public function scrape(string $url): ParseResponse
+    {
+        $response = $this->client->request('GET', $url);
+        return $this->setContent(
+            $response->getBody()
+        )->parse();
     }
 }
