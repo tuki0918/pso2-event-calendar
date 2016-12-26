@@ -17,6 +17,8 @@ abstract class ParseEngine implements ParseEngineInterface
     protected $log;
     /** @var Client */
     private $client;
+    /** @var null|string */
+    private $url;
 
     /**
      * ParseEngine constructor.
@@ -31,10 +33,12 @@ abstract class ParseEngine implements ParseEngineInterface
 
     /**
      * @param string $content
-     * @return self
+     * @param null|string $url
+     * @return ParseEngine
      */
-    public function setContent(string $content): self
+    public function setContent(string $content, string $url = null): self
     {
+        $this->url = $url;
         $this->crawler->clear();
         $this->crawler->addContent($content);
         return $this;
@@ -46,9 +50,15 @@ abstract class ParseEngine implements ParseEngineInterface
      */
     public function scrape(string $url): ParseResponse
     {
-        $response = $this->client->request('GET', $url);
-        return $this->setContent(
-            $response->getBody()
-        )->parse();
+        $content = $this->client->request('GET', $url)->getBody();
+        return $this->setContent($content, $url)->parse();
+    }
+
+    /**
+     * @return null|string
+     */
+    protected function url(): ?string
+    {
+        return $this->url;
     }
 }

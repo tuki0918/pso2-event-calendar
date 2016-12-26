@@ -18,40 +18,47 @@ class Campaign extends Entity
     private $type;
     /** @var string */
     private $description;
+    /** @var null|string */
+    private $link;
 
     /**
-     * Event constructor.
+     * Campaign constructor.
      * @param CampaignId $id
      * @param CampaignPeriod $period
      * @param CampaignType $type
      * @param string $description
+     * @param null|string $link
      */
     private function __construct(
         CampaignId $id,
         CampaignPeriod $period,
         CampaignType $type,
-        string $description
+        string $description,
+        ?string $link
     ) {
         $this->id = $id;
         $this->period = $period;
         $this->type = $type;
         $this->description = $description;
+        $this->link = $link;
     }
 
     /**
-     * @param CampaignId $id イベント識別子
+     * @param CampaignId $id
      * @param CampaignPeriod $period
      * @param CampaignType $type
      * @param string $description
+     * @param null|string $link
      * @return Campaign
      */
     public static function create(
         CampaignId $id,
         CampaignPeriod $period,
         CampaignType $type,
-        string $description
+        string $description,
+        ?string $link
     ): self {
-        return new self($id, $period, $type, $description);
+        return new self($id, $period, $type, $description, $link);
     }
 
     /**
@@ -88,5 +95,14 @@ class Campaign extends Entity
     public function description(): string
     {
         return $this->description;
+    }
+
+    /**
+     * イベントページ
+     * @return null|string
+     */
+    public function link(): ?string
+    {
+        return $this->link;
     }
 }

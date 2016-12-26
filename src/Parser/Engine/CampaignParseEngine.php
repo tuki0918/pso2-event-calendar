@@ -97,7 +97,8 @@ class CampaignParseEngine extends ParseEngine
                     CampaignId::create(null),
                     $this->period($n, $day),
                     $this->type($n),
-                    $this->description($n)
+                    $this->description($n),
+                    $this->url()
                 );
                 $this->addCampaign($campaign);
             });

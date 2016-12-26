@@ -18,13 +18,15 @@ class CampaignTest extends \PHPUnit_Framework_TestCase
         $period = $this->createMock(CampaignPeriod::class);
         $type = $this->createMock(CampaignType::class);
         $description = 'string string string string.';
+        $link = 'http://localhost';
 
-        $obj = Campaign::create($id, $period, $type, $description);
+        $obj = Campaign::create($id, $period, $type, $description, $link);
 
         $this->assertInstanceOf(Campaign::class, $obj);
         $this->assertInstanceOf(CampaignId::class, $obj->id());
         $this->assertInstanceOf(CampaignPeriod::class, $obj->period());
         $this->assertInstanceOf(CampaignType::class, $obj->type());
-        $this->assertInternalType('string', $obj->description());
+        $this->assertEquals($description, $obj->description());
+        $this->assertEquals($link, $obj->link());
     }
 }
