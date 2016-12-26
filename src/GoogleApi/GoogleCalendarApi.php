@@ -6,7 +6,7 @@ use Google_Client;
 use Google_Service_Calendar;
 use Google_Service_Calendar_Event;
 
-class GoogleCalendarApi extends GoogleApi
+class GoogleCalendarApi extends GoogleApi implements GoogleCalendarApiInterface
 {
     /** @var Google_Service_Calendar */
     private $service;
