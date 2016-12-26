@@ -17,6 +17,8 @@
         <whitelist>
             <directory suffix=".php">./src</directory>
             <exclude>
+                <file>./src/bootstrap.php</file>
+                <file>./src/config.php</file>
                 <file>./src/index.php</file>
             </exclude>
         </whitelist>
