@@ -147,4 +147,68 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(CampaignType::LIVE, $campaign->type()->getValue());
         $this->assertEquals('クーナスペシャルライブ「Our Fighting」', $campaign->description());
     }
+
+    /**
+     * @test
+     * @depends パーサーを作成できる
+     */
+    public function コンテンツをロードしパースするC(CampaignParseEngine $engine)
+    {
+        $content = file_get_contents(__DIR__.'/../../resources/campaign-20161228.html');
+        $response = $engine->setContent($content)->parse();
+        $this->assertInstanceOf(CampaignResponse::class, $response);
+        return $response;
+    }
+
+    /**
+     * @test
+     * @depends コンテンツをロードしパースするC
+     */
+    public function キャンペーンタイトルの確認C(CampaignResponse $response)
+    {
+        $title = '2016/12/28 ～ 2017/1/11のブースト＆予告イベント情報！';
+        $this->assertEquals($title, $response->title());
+    }
+
+    /**
+     * @test
+     * @depends コンテンツをロードしパースするC
+     */
+    public function イベント件数の確認C(CampaignResponse $response)
+    {
+        $data = $response->data();
+        $this->assertEquals(113, count($data));
+    }
+
+    /**
+     * @test
+     * @depends コンテンツをロードしパースするC
+     */
+    public function イベント内容の確認C1(CampaignResponse $response)
+    {
+        $data = $response->data();
+        /** @var Campaign $campaign */
+        $campaign = $data[0]; // 1個目
+        $this->assertEquals('', $campaign->id()->value());
+        $this->assertEquals('2016-12-28 20:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2016-12-28 20:30:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
+        $this->assertEquals(CampaignType::EMERGENCY, $campaign->type()->getValue());
+        $this->assertEquals('「月駆ける幻創の母」', $campaign->description());
+    }
+
+    /**
+     * @test
+     * @depends コンテンツをロードしパースするC
+     */
+    public function イベント内容の確認C72(CampaignResponse $response)
+    {
+        $data = $response->data();
+        /** @var Campaign $campaign */
+        $campaign = $data[71]; // 72個目
+        $this->assertEquals('', $campaign->id()->value());
+        $this->assertEquals('2017-01-05 07:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2017-01-05 09:00:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
+        $this->assertEquals(CampaignType::ARKSLEAGUE, $campaign->type()->getValue());
+        $this->assertEquals('アークスリーグ開催！アイテム収集：ウェポンズバッヂ2016銀', $campaign->description());
+    }
 }
