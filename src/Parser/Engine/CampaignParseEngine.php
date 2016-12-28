@@ -17,6 +17,8 @@ class CampaignParseEngine extends ParseEngine
 {
     /** @var Campaign[] */
     private $data;
+    /** @var DateTimeImmutable|null */
+    private $previous;
 
     /**
      * @return CampaignResponse
@@ -52,6 +54,22 @@ class CampaignParseEngine extends ParseEngine
     private function data(): array
     {
         return $this->data;
+    }
+
+    /**
+     * @param DateTimeImmutable $day
+     */
+    private function setPrevious(DateTimeImmutable $day)
+    {
+        $this->previous = $day;
+    }
+
+    /**
+     * @return DateTimeImmutable|null
+     */
+    private function previous(): ?DateTimeImmutable
+    {
+        return $this->previous;
     }
 
     /**
@@ -121,7 +139,13 @@ class CampaignParseEngine extends ParseEngine
         $regex = '`^(?<mounth>\d+)月(?<day>\d+)日`';
         if (preg_match($regex, $day, $m)) {
             $time = date('Y-m-d 00:00:00', mktime(0, 0, 0, $m['mounth'], $m['day']));
-            return new DateTimeImmutable($time);
+            $day = new DateTimeImmutable($time);
+            // １つ前に処理した日付の方が多い場合は年度を繰り上げる
+            if ($day < $this->previous()) {
+                $day = $day->add(new DateInterval('P1Y'));
+            }
+            $this->setPrevious($day);
+            return $day;
         } else {
             throw new RuntimeException('日付パースエラー');
         }
