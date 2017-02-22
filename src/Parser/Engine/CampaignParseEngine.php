@@ -138,7 +138,8 @@ class CampaignParseEngine extends ParseEngine
 
         $regex = '`^(?<mounth>\d+)月(?<day>\d+)日`';
         if (preg_match($regex, $day, $m)) {
-            $time = date('Y-m-d 00:00:00', mktime(0, 0, 0, $m['mounth'], $m['day']));
+            $year = $this->startDate()->format('Y');
+            $time = date('Y-m-d 00:00:00', mktime(0, 0, 0, $m['mounth'], $m['day'], $year));
             $day = new DateTimeImmutable($time);
             // １つ前に処理した日付の方が多い場合は年度を繰り上げる
             if ($day < $this->previous()) {
@@ -240,5 +241,23 @@ class CampaignParseEngine extends ParseEngine
             // キャンペーン内容
             $this->cssSelector->toXPath('td')
         )->last()->text());
+    }
+
+    /**
+     * イベント開始日
+     * @deprecated DOM構造の変更により意図しない値を返す可能性あり
+     * @param Crawler $node
+     * @return DateTimeImmutable
+     */
+    private function startDate(): DateTimeImmutable
+    {
+        $title = $this->title();
+        $regex = '`^(?<year>\d+)/(?<mounth>\d{1,2})/(?<day>\d{1,2})`';
+        if (preg_match($regex, $title, $m)) {
+            $time = date('Y-m-d 00:00:00', mktime(0, 0, 0, $m['mounth'], $m['day'], $m['year']));
+            return new DateTimeImmutable($time);
+        } else {
+            throw new RuntimeException('イベント開始日パースエラー');
+        }
     }
 }
