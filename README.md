@@ -16,7 +16,7 @@
 + Calendar Update
 
 ```
-make update
+make console RUN_ARGS="calendar:fetch --deploy"
 ```
 
 + Fix Coding Style

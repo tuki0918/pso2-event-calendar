@@ -1,16 +1,11 @@
 WORK_DIR=/var/www/html
 
-.PHONY: console update styling test setup
+.PHONY: console styling test setup
 console:
 	/usr/local/bin/docker run --rm -it \
         -v $(PWD):$(WORK_DIR) \
         php:7.1-apache \
         php src/console.php $(RUN_ARGS)
-update:
-	/usr/local/bin/docker run --rm -it \
-        -v $(PWD):$(WORK_DIR) \
-        php:7.1-apache \
-        php src/index.php
 styling:
 	/usr/local/bin/docker run --rm -it \
         -v $(PWD):$(WORK_DIR) \
