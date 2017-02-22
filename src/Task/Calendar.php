@@ -34,18 +34,27 @@ class Calendar
     }
 
     /**
-     * キャンペーン情報を取得し、カレンダーに登録する
+     * キャンペーン情報を取得する
      * @param string $url
+     * @return Campaign[]
+     */
+    public function get(string $url): array
+    {
+        // キャンペーンを取得
+        return $this->engine->scrape($url)->data();
+    }
+
+    /**
+     * カレンダーに反映する
      * @param string $calendarId
      * @param string $calendarCreator
+     * @param Campaign[] ...$campaigns
      */
-    public function run(
-        string $url,
+    public function deploy(
         string $calendarId,
-        string $calendarCreator
+        string $calendarCreator,
+        Campaign ...$campaigns
     ) {
-        // キャンペーンを取得
-        $campaigns = $this->engine->scrape($url)->data();
         // カレンダーを初期化
         $this->calendar->clear($calendarId, $calendarCreator);
 
