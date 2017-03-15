@@ -211,4 +211,32 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(CampaignType::ARKSLEAGUE, $campaign->type()->getValue());
         $this->assertEquals('アークスリーグ開催！アイテム収集：ウェポンズバッヂ2016銀', $campaign->description());
     }
+
+    /**
+     * @test
+     * @depends パーサーを作成できる
+     */
+    public function コンテンツをロードしパースするD(CampaignParseEngine $engine)
+    {
+        $content = file_get_contents(__DIR__.'/../../resources/campaign-20170315.html');
+        $response = $engine->setContent($content)->parse();
+        $this->assertInstanceOf(CampaignResponse::class, $response);
+        return $response;
+    }
+
+    /**
+     * @test
+     * @depends コンテンツをロードしパースするD
+     */
+    public function イベント内容の確認D2(CampaignResponse $response)
+    {
+        $data = $response->data();
+        /** @var Campaign $campaign */
+        $campaign = $data[1]; // 2個目
+        $this->assertEquals('', $campaign->id()->value());
+        $this->assertEquals('2017-03-15 21:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2017-03-15 23:00:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
+        $this->assertEquals(CampaignType::EVENTREWARD, $campaign->type()->getValue());
+        $this->assertEquals('カジノスーパーブースト実施中！', $campaign->description());
+    }
 }
