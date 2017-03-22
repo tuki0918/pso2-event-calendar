@@ -178,7 +178,11 @@ class CampaignParseEngine extends ParseEngine
             $endAt = $startAt->add(new DateInterval('PT30M'));
         } elseif (preg_match($regex2, $time, $m)) {
             $startAt = $day->setTime($m['shour'], $m['sminute']);
-            $endAt = $day->setTime($m['ehour'], $m['eminute']);
+            if ($m['ehour'] == '0' && $m['eminute'] === '00') {
+                $endAt = $day->setTime(23, 59, 59);
+            } else {
+                $endAt = $day->setTime($m['ehour'], $m['eminute']);
+            }
         } elseif (preg_match($regex3, $time, $m)) {
             $startAt = $day->setTime(0, 0);
             $endAt = $day->setTime(23, 59, 59);
