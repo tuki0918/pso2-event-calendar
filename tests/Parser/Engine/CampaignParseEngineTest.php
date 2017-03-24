@@ -239,4 +239,34 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals(CampaignType::EVENTREWARD, $campaign->type()->getValue());
         $this->assertEquals('カジノスーパーブースト実施中！', $campaign->description());
     }
+
+    /**
+     * @test
+     * @depends パーサーを作成できる
+     */
+    public function コンテンツをロードしパースするE(CampaignParseEngine $engine)
+    {
+        $content = file_get_contents(__DIR__.'/../../resources/campaign-20170322.html');
+        $response = $engine->setContent($content)->parse();
+        $this->assertInstanceOf(CampaignResponse::class, $response);
+        return $response;
+    }
+
+    /**
+     * @test
+     * @depends コンテンツをロードしパースするE
+     */
+    public function イベント内容の確認E19(CampaignResponse $response)
+    {
+        $data = $response->data();
+        /** @var Campaign $campaign */
+        $campaign = $data[18]; // 19個目
+        $this->assertEquals('', $campaign->id()->value());
+        $this->assertEquals('2017-03-25 18:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
+        // 2017-03-25 00:00:00 -> 2017-03-25 23:59:59
+        $this->assertEquals('2017-03-25 23:59:59', $campaign->period()->end()->format('Y-m-d H:i:s'));
+        $this->assertEquals(CampaignType::BOOST, $campaign->type()->getValue());
+        $this->assertEquals('ゲーム連動12時間ぶっ続け生放送SP スコアアタック　レベルアップクエスト'.
+            '「境界を貫く双角の凶鳥」で獲得経験値が＋100％！', $campaign->description());
+    }
 }
