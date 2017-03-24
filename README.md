@@ -5,7 +5,7 @@
 
 [Google Calendar](https://goo.gl/JWExl7)
 
-### Requires
+### Requirements
 
 + php: >= 7.1
 + src/.env
@@ -16,19 +16,19 @@
 + Calendar Update
 
 ```
-make console RUN_ARGS="calendar:fetch --deploy"
+$ ./run.sh deploy
 ```
 
 + Fix Coding Style
 
 ```
-make styling
+$ ./run.sh styling
 ```
 
 + Unit Test
 
 ```
-make test
+$ ./run.sh test
 ```
 
 ### Composer
@@ -36,5 +36,5 @@ make test
 + Packages Install (PHP v7.0)
 
 ```
-make setup
+$ ./run.sh init
 ```
