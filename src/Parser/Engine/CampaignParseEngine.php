@@ -170,7 +170,7 @@ class CampaignParseEngine extends ParseEngine
         $endAt = null;
 
         $regex1 = '`^(?<shour>\d+):(?<sminute>\d+)$`';
-        $regex2 = '`^(?<shour>\d+):(?<sminute>\d+) ～ (?<ehour>\d+):(?<eminute>\d+)$`';
+        $regex2 = '`^(?<shour>\d+):(?<sminute>\d+) ?～ ?(?<ehour>\d+):(?<eminute>\d+)$`';
         $regex3 = '`^終日$`';
         if (preg_match($regex1, $time, $m)) {
             $startAt = $day->setTime($m['shour'], $m['sminute']);
