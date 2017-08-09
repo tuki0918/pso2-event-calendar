@@ -14,7 +14,10 @@ class CalendarUpdateCommand extends Command
     {
         $this->setName('calendar:fetch')
             ->setDescription('Fetch the current event calendar.')
-            ->addOption('deploy', null, InputOption::VALUE_NONE,
+            ->addOption(
+                'deploy',
+                null,
+                InputOption::VALUE_NONE,
                 'If set, the task will deploy to google calendar.'
             )
         ;
