@@ -26,7 +26,7 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
      */
     public function コンテンツをロードしパースするA(CampaignParseEngine $engine)
     {
-        $content = file_get_contents(__DIR__.'/../../resources/campaign-20161207.html');
+        $content = file_get_contents(__DIR__.'/../../resources/campaign-20170802.html');
         $response = $engine->setContent($content)->parse();
         $this->assertInstanceOf(CampaignResponse::class, $response);
         return $response;
@@ -38,7 +38,7 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
      */
     public function キャンペーンタイトルの確認A(CampaignResponse $response)
     {
-        $title = '2016/12/7 ～ 12/14のブースト＆予告イベント情報！';
+        $title = '2017/08/02～2017/08/09';
         $this->assertEquals($title, $response->title());
     }
 
@@ -49,7 +49,8 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
     public function イベント件数の確認A(CampaignResponse $response)
     {
         $data = $response->data();
-        $this->assertEquals(32, count($data));
+        // 重複1つあり
+        $this->assertEquals(42, count($data));
     }
 
     /**
@@ -60,29 +61,30 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
     {
         $data = $response->data();
         /** @var Campaign $campaign */
-        $campaign = $data[0]; // 1つ目
-        $this->assertEquals('', $campaign->id()->value());
-        $this->assertEquals('2016-12-07 20:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
-        $this->assertEquals('2016-12-07 20:30:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
+        $campaign = $data[0];
+        $this->assertEquals(1, $campaign->id()->value());
+        $this->assertEquals('2017-08-02 02:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2017-08-02 02:30:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
         $this->assertEquals(CampaignType::EMERGENCY, $campaign->type()->getValue());
-        $this->assertEquals('「氷上のメリークリスマス2016」', $campaign->description());
+        $this->assertEquals('新世を成す幻創の造神', $campaign->description());
     }
 
     /**
      * @test
      * @depends コンテンツをロードしパースするA
      */
-    public function イベント内容の確認A20(CampaignResponse $response)
+    public function イベント内容の確認A36(CampaignResponse $response)
     {
         $data = $response->data();
         /** @var Campaign $campaign */
-        $campaign = $data[19]; // 20個目
-        $this->assertEquals('', $campaign->id()->value());
-        $this->assertEquals('2016-12-11 15:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
-        $this->assertEquals('2016-12-11 18:00:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
-        $this->assertEquals(CampaignType::CASINO, $campaign->type()->getValue());
-        $this->assertEquals('「リーリールーレット」でチャンスマスの出現確率アップ！', $campaign->description());
+        $campaign = $data[35];
+        $this->assertEquals(36, $campaign->id()->value());
+        $this->assertEquals('2017-08-05 22:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2017-08-05 23:30:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
+        $this->assertEquals(CampaignType::UNKNOWN, $campaign->type()->getValue());
+        $this->assertEquals('PSO2 アークスライブ！ワンモア！', $campaign->description());
     }
+
 
     /**
      * @test
@@ -90,7 +92,7 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
      */
     public function コンテンツをロードしパースするB(CampaignParseEngine $engine)
     {
-        $content = file_get_contents(__DIR__.'/../../resources/campaign-20161221.html');
+        $content = file_get_contents(__DIR__.'/../../resources/campaign-20170809.html');
         $response = $engine->setContent($content)->parse();
         $this->assertInstanceOf(CampaignResponse::class, $response);
         return $response;
@@ -102,7 +104,7 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
      */
     public function キャンペーンタイトルの確認B(CampaignResponse $response)
     {
-        $title = '2016/12/21 ～ 12/28のブースト＆予告イベント情報！';
+        $title = '2017/08/09～2017/08/16';
         $this->assertEquals($title, $response->title());
     }
 
@@ -113,160 +115,38 @@ class CampaignParseEngineTest extends \PHPUnit_Framework_TestCase
     public function イベント件数の確認B(CampaignResponse $response)
     {
         $data = $response->data();
-        $this->assertEquals(44, count($data));
+        $this->assertEquals(41, count($data));
     }
 
     /**
      * @test
      * @depends コンテンツをロードしパースするB
      */
-    public function イベント内容の確認B13(CampaignResponse $response)
+    public function イベント内容の確認B19(CampaignResponse $response)
     {
         $data = $response->data();
         /** @var Campaign $campaign */
-        $campaign = $data[12]; // 13個目
-        $this->assertEquals('', $campaign->id()->value());
-        $this->assertEquals('2016-12-24 00:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
-        $this->assertEquals('2016-12-24 23:59:59', $campaign->period()->end()->format('Y-m-d H:i:s'));
-        $this->assertEquals(CampaignType::BOOST, $campaign->type()->getValue());
-        $this->assertEquals('すべてのクエストに対してレアドロップの倍率が＋50％！', $campaign->description());
-    }
-
-    /**
-     * @test
-     * @depends コンテンツをロードしパースするB
-     */
-    public function イベント内容の確認B18(CampaignResponse $response)
-    {
-        $data = $response->data();
-        /** @var Campaign $campaign */
-        $campaign = $data[17]; // 18個目
-        $this->assertEquals('', $campaign->id()->value());
-        $this->assertEquals('2016-12-24 20:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
-        $this->assertEquals('2016-12-24 20:30:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
+        $campaign = $data[18];
+        $this->assertEquals(19, $campaign->id()->value());
+        $this->assertEquals('2017-08-14 13:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2017-08-14 13:30:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
         $this->assertEquals(CampaignType::LIVE, $campaign->type()->getValue());
-        $this->assertEquals('クーナスペシャルライブ「Our Fighting」', $campaign->description());
+        $this->assertEquals('クーナスペシャルライブ「Cosmic twinkle star」', $campaign->description());
     }
 
     /**
      * @test
-     * @depends パーサーを作成できる
+     * @depends コンテンツをロードしパースするB
      */
-    public function コンテンツをロードしパースするC(CampaignParseEngine $engine)
-    {
-        $content = file_get_contents(__DIR__.'/../../resources/campaign-20161228.html');
-        $response = $engine->setContent($content)->parse();
-        $this->assertInstanceOf(CampaignResponse::class, $response);
-        return $response;
-    }
-
-    /**
-     * @test
-     * @depends コンテンツをロードしパースするC
-     */
-    public function キャンペーンタイトルの確認C(CampaignResponse $response)
-    {
-        $title = '2016/12/28 ～ 2017/1/11のブースト＆予告イベント情報！';
-        $this->assertEquals($title, $response->title());
-    }
-
-    /**
-     * @test
-     * @depends コンテンツをロードしパースするC
-     */
-    public function イベント件数の確認C(CampaignResponse $response)
-    {
-        $data = $response->data();
-        $this->assertEquals(113, count($data));
-    }
-
-    /**
-     * @test
-     * @depends コンテンツをロードしパースするC
-     */
-    public function イベント内容の確認C1(CampaignResponse $response)
+    public function イベント内容の確認B22(CampaignResponse $response)
     {
         $data = $response->data();
         /** @var Campaign $campaign */
-        $campaign = $data[0]; // 1個目
-        $this->assertEquals('', $campaign->id()->value());
-        $this->assertEquals('2016-12-28 20:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
-        $this->assertEquals('2016-12-28 20:30:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
+        $campaign = $data[21];
+        $this->assertEquals(22, $campaign->id()->value());
+        $this->assertEquals('2017-08-14 13:30:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
+        $this->assertEquals('2017-08-14 14:00:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
         $this->assertEquals(CampaignType::EMERGENCY, $campaign->type()->getValue());
-        $this->assertEquals('「月駆ける幻創の母」', $campaign->description());
-    }
-
-    /**
-     * @test
-     * @depends コンテンツをロードしパースするC
-     */
-    public function イベント内容の確認C72(CampaignResponse $response)
-    {
-        $data = $response->data();
-        /** @var Campaign $campaign */
-        $campaign = $data[71]; // 72個目
-        $this->assertEquals('', $campaign->id()->value());
-        $this->assertEquals('2017-01-05 07:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
-        $this->assertEquals('2017-01-05 09:00:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
-        $this->assertEquals(CampaignType::ARKSLEAGUE, $campaign->type()->getValue());
-        $this->assertEquals('アークスリーグ開催！アイテム収集：ウェポンズバッヂ2016銀', $campaign->description());
-    }
-
-    /**
-     * @test
-     * @depends パーサーを作成できる
-     */
-    public function コンテンツをロードしパースするD(CampaignParseEngine $engine)
-    {
-        $content = file_get_contents(__DIR__.'/../../resources/campaign-20170315.html');
-        $response = $engine->setContent($content)->parse();
-        $this->assertInstanceOf(CampaignResponse::class, $response);
-        return $response;
-    }
-
-    /**
-     * @test
-     * @depends コンテンツをロードしパースするD
-     */
-    public function イベント内容の確認D2(CampaignResponse $response)
-    {
-        $data = $response->data();
-        /** @var Campaign $campaign */
-        $campaign = $data[1]; // 2個目
-        $this->assertEquals('', $campaign->id()->value());
-        $this->assertEquals('2017-03-15 21:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
-        $this->assertEquals('2017-03-15 23:00:00', $campaign->period()->end()->format('Y-m-d H:i:s'));
-        $this->assertEquals(CampaignType::EVENTREWARD, $campaign->type()->getValue());
-        $this->assertEquals('カジノスーパーブースト実施中！', $campaign->description());
-    }
-
-    /**
-     * @test
-     * @depends パーサーを作成できる
-     */
-    public function コンテンツをロードしパースするE(CampaignParseEngine $engine)
-    {
-        $content = file_get_contents(__DIR__.'/../../resources/campaign-20170322.html');
-        $response = $engine->setContent($content)->parse();
-        $this->assertInstanceOf(CampaignResponse::class, $response);
-        return $response;
-    }
-
-    /**
-     * @test
-     * @depends コンテンツをロードしパースするE
-     */
-    public function イベント内容の確認E19(CampaignResponse $response)
-    {
-        $data = $response->data();
-        /** @var Campaign $campaign */
-        $campaign = $data[18]; // 19個目
-        $this->assertEquals('', $campaign->id()->value());
-        $this->assertEquals('2017-03-25 18:00:00', $campaign->period()->start()->format('Y-m-d H:i:s'));
-        // 2017-03-25 00:00:00 -> 2017-03-25 23:59:59
-        $this->assertEquals('2017-03-25 23:59:59', $campaign->period()->end()->format('Y-m-d H:i:s'));
-        $this->assertEquals(CampaignType::BOOST, $campaign->type()->getValue());
-        $this->assertEquals('ゲーム連動12時間ぶっ続け生放送SP スコアアタック　レベルアップクエスト'.
-            '「境界を貫く双角の凶鳥」で獲得経験値が＋100％！', $campaign->description());
+        $this->assertEquals('ビーチウォーズ２０１７！', $campaign->description());
     }
 }

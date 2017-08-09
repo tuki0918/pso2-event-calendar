@@ -8,8 +8,8 @@ use App\Entity\ValueObject\CampaignId;
 use App\Entity\ValueObject\CampaignPeriod;
 use App\Parser\Core\ParseEngine;
 use App\Parser\Response\CampaignResponse;
-use DateInterval;
 use DateTimeImmutable;
+use LogicException;
 use RuntimeException;
 use Symfony\Component\DomCrawler\Crawler;
 
@@ -73,16 +73,21 @@ class CampaignParseEngine extends ParseEngine
     }
 
     /**
-     * キャンペーンタイトル
+     * キャンペーンタイトル（期間）
      * @return string
      */
     private function title(): string
     {
-        // e.g.) 2016/12/7 ～ 12/14のブースト＆予告イベント情報
-        return trim($this->crawler->filterXPath(
-        // キャンペーンタイトル
-            $this->cssSelector->toXPath('div.tabsWrap > dl > dd')
-        )->text());
+        // e.g.) 2017/08/02～2017/08/09
+        $nodes = $this->crawler->filterXPath(
+            $this->cssSelector->toXPath('li.pager--date')
+        );
+
+        if ($nodes->count() > 0) {
+            return $nodes->text();
+        }
+
+        throw new LogicException('レイアウトが変更されている可能性があります。');
     }
 
     /**
@@ -92,109 +97,61 @@ class CampaignParseEngine extends ParseEngine
     private function campaigns(): array
     {
         $this->clear();
-        $this->crawler->filterXPath(
-            // キャンペーンテーブル
-            $this->cssSelector->toXPath('div.tableWrap')
-        )->each(function (Crawler $node) {
-            // 日付テキストを取得
-            $day = $this->day(trim($node->previousAll()->text()));
-            if (is_null($day)) {
-                return null;
-            }
-            // キャンペーン情報リストを取得
-            $node->filterXPath(
-                // キャンペーンテーブルの行
-                $this->cssSelector->toXPath('table tr')
-            )->each(function (Crawler $n, $i) use ($day) {
-                // 見出し行をスキップする
-                if ($i <= 0) {
-                    return null;
-                }
+        $nodes = $this->crawler->filterXPath(
+            $this->cssSelector->toXPath('div.eventTable--event table > tr > td > div > dl')
+        );
+
+        if ($nodes->count() > 0) {
+            $nodes->each(function (Crawler $node, $i) {
                 // キャンペーンを登録
                 $campaign = Campaign::create(
-                    CampaignId::create(null),
-                    $this->period($n, $day),
-                    $this->type($n),
-                    $this->description($n),
+                    CampaignId::create($i + 1),
+                    $this->period($node),
+                    $this->type($node),
+                    $this->description($node),
                     $this->url()
                 );
+
+                // TODO: 重複は追加しない
                 $this->addCampaign($campaign);
             });
-        });
+        }
+
         return $this->data();
-    }
-
-    /**
-     * キャンペーン開始日
-     * @param string $day
-     * @return DateTimeImmutable|null
-     * @throws RuntimeException
-     */
-    private function day(string $day): ?DateTimeImmutable
-    {
-        if ($day === '期間ブースト') {
-            return null;
-        }
-
-        $regex = '`^(?<mounth>\d+)月(?<day>\d+)日`';
-        if (preg_match($regex, $day, $m)) {
-            $year = $this->startDate()->format('Y');
-            $time = date('Y-m-d 00:00:00', mktime(0, 0, 0, $m['mounth'], $m['day'], $year));
-            $day = new DateTimeImmutable($time);
-            // １つ前に処理した日付の方が多い場合は年度を繰り上げる
-            if ($day < $this->previous()) {
-                $day = $day->add(new DateInterval('P1Y'));
-            }
-            $this->setPrevious($day);
-            return $day;
-        } else {
-            throw new RuntimeException('日付パースエラー');
-        }
     }
 
     /**
      * キャンペーン期間
      * @deprecated DOM構造の変更により意図しない値を返す可能性あり
      * @param Crawler $node
-     * @param DateTimeImmutable $day 開始日
      * @return CampaignPeriod
      */
-    private function period(Crawler $node, DateTimeImmutable $day): CampaignPeriod
+    private function period(Crawler $node): CampaignPeriod
     {
-        $time = trim($node->filterXPath(
-            // キャンペーン開始時刻
-            $this->cssSelector->toXPath('th.sub')
-        )->first()->text());
+        // e.g.) 08/1123:30～08/1200:00
+        $period = trim($node->filterXPath($this->cssSelector->toXPath('dd'))->first()->text());
 
-        $startAt = null;
-        $endAt = null;
+        $regex = '`^(?<smounth>\d{2})/(?<sday>\d{2})(?<shour>\d{2}):(?<sminute>\d{2})～(?<emounth>\d{2})/(?<eday>\d{2})(?<ehour>\d{2}):(?<eminute>\d{2})`';
+        if (preg_match($regex, $period, $m)) {
+            $year = $this->startDate()->format('Y');
+            $startAt = new DateTimeImmutable(
+                date('Y-m-d H:i:s', mktime($m['shour'], $m['sminute'], 0, $m['smounth'], $m['sday'], $year))
+            );
+            // TODO: 年度調整
+            $this->setPrevious($startAt);
 
-        $regex1 = '`^(?<shour>\d+):(?<sminute>\d+)$`';
-        $regex2 = '`^(?<shour>\d+):(?<sminute>\d+) ?～ ?(?<ehour>\d+):(?<eminute>\d+)$`';
-        $regex3 = '`^終日$`';
-        if (preg_match($regex1, $time, $m)) {
-            $startAt = $day->setTime($m['shour'], $m['sminute']);
-            // 終了時間が指定されていない場合は開始時間の30分後に設定する
-            $endAt = $startAt->add(new DateInterval('PT30M'));
-        } elseif (preg_match($regex2, $time, $m)) {
-            $startAt = $day->setTime($m['shour'], $m['sminute']);
-            if ($m['ehour'] == '0' && $m['eminute'] === '00') {
-                $endAt = $day->setTime(23, 59, 59);
-            } else {
-                $endAt = $day->setTime($m['ehour'], $m['eminute']);
-            }
-        } elseif (preg_match($regex3, $time, $m)) {
-            $startAt = $day->setTime(0, 0);
-            $endAt = $day->setTime(23, 59, 59);
-        }
+            $endAt = new DateTimeImmutable(
+                date('Y-m-d H:i:s', mktime($m['ehour'], $m['eminute'], 0, $m['emounth'], $m['eday'], $startAt->format('Y')))
+            );
 
-        if (is_null($startAt)) {
+            // TODO: 年度調整
+            return CampaignPeriod::create($startAt, $endAt);
+        } else {
             $this->log->warning('period parse error.', [
-                'content' => $time,
+                'content' => $period,
             ]);
+            throw new RuntimeException('日付パースエラー');
         }
-
-        return CampaignPeriod::create($startAt, $endAt);
     }
 
     /**
@@ -207,19 +164,13 @@ class CampaignParseEngine extends ParseEngine
     {
         $content = trim($node->filterXPath(
             // キャンペーンの分類アイコン
-            $this->cssSelector->toXPath('td.icon > img')
-        )->first()->attr('alt'));
+            $this->cssSelector->toXPath('dt')
+        )->first()->text());
 
         switch ($content) {
-            case 'ブースト':
-                return CampaignType::Boost();
             case '緊急':
                 return CampaignType::Emergency();
-            case 'アークスリーグ':
-                return CampaignType::ArksLeague();
-            case 'ネットカフェ':
-                return CampaignType::NetCafe();
-            case 'カジノ':
+            case 'カジノイベント':
                 return CampaignType::Casino();
             case 'チャレンジ':
                 return CampaignType::Challenge();
@@ -227,6 +178,20 @@ class CampaignParseEngine extends ParseEngine
                 return CampaignType::Live();
             case 'イベント報酬':
                 return CampaignType::EventReward();
+            case 'アークスリーグ':
+                return CampaignType::ArksLeague();
+            case 'パネル報酬':
+                return CampaignType::Unknown();
+            case 'PSO2の日':
+                return CampaignType::Unknown();
+            case 'キャンペーン':
+                return CampaignType::Unknown();
+            case 'ブースト':
+                return CampaignType::Boost();
+            case 'ネットカフェ':
+                return CampaignType::NetCafe();
+            case '公式番組情報':
+                return CampaignType::Unknown();
             default:
                 $this->log->warning('not found type.', [
                     'content' => $content,
@@ -244,8 +209,7 @@ class CampaignParseEngine extends ParseEngine
     private function description(Crawler $node): string
     {
         return trim($node->filterXPath(
-            // キャンペーン内容
-            $this->cssSelector->toXPath('td')
+            $this->cssSelector->toXPath('dd')
         )->last()->text());
     }
 
@@ -258,7 +222,7 @@ class CampaignParseEngine extends ParseEngine
     private function startDate(): DateTimeImmutable
     {
         $title = $this->title();
-        $regex = '`^(?<year>\d+)/(?<mounth>\d{1,2})/(?<day>\d{1,2})`';
+        $regex = '`^(?<year>\d{4})/(?<mounth>\d{2})/(?<day>\d{2})`';
         if (preg_match($regex, $title, $m)) {
             $time = date('Y-m-d 00:00:00', mktime(0, 0, 0, $m['mounth'], $m['day'], $m['year']));
             return new DateTimeImmutable($time);
