@@ -33,8 +33,14 @@ $ ./run.sh test
 
 ### Composer
 
-+ Packages Install (PHP v7.0)
++ Packages Install
 
 ```
 $ ./run.sh init
+```
+
++ Packages Update
+
+```
+$ ./run.sh update
 ```

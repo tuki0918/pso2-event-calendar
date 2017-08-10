@@ -43,7 +43,12 @@ case "$1" in
     init)
         /usr/local/bin/docker container run --rm \
             -v ${PWD}:/app \
-            composer/composer:1.1-alpine install
+            composer:1.5 install
+        ;;
+    update)
+        /usr/local/bin/docker container run --rm \
+            -v ${PWD}:/app \
+            composer:1.5 update
         ;;
     *)
         usage
